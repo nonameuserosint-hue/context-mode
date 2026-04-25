@@ -146,7 +146,7 @@ code{font-family:var(--mono);font-size:.88em;background:var(--bg-code);color:var
     <div class="hero-stat"><div class="val" id="stat-users">—</div><div class="lbl">users</div></div>
     <div class="hero-stat"><div class="val" id="stat-npm">—</div><div class="lbl">npm</div></div>
     <div class="hero-stat"><div class="val" id="stat-marketplace">—</div><div class="lbl">marketplace</div></div>
-    <div class="hero-stat"><div class="val">12</div><div class="lbl">platforms</div></div>
+    <div class="hero-stat"><div class="val">14</div><div class="lbl">platforms</div></div>
   </div>
   <div class="hero-cta">
     <a href="https://github.com/mksglu/context-mode#install" class="pri">Get Started →</a>
@@ -279,6 +279,37 @@ code{font-family:var(--mono);font-size:.88em;background:var(--bg-code);color:var
 
 <hr class="sep">
 
+<!-- Ch 4b -->
+<section class="chapter rev">
+  <p class="section-label">Output</p>
+  <h2 class="section-title">Output compression</h2>
+  <div class="rule"></div>
+
+  <p class="body-text">Context saving handles the input side. But the agent wastes output tokens too — filler words, pleasantries, verbose explanations, hedging. "Sure! I'd be happy to help you with that. Let me take a look at the file and see what we can do." That's 30 tokens of nothing.</p>
+
+  <p class="body-text">context-mode enforces output compression across all 14 platforms. Technical substance stays exact. Only fluff dies.</p>
+
+  <div style="background:var(--bg-alt);border:1px solid var(--border-light);border-radius:6px;padding:22px 24px;margin:1.5rem 0">
+    <p style="font-size:15px;color:var(--text);font-weight:600;margin-bottom:10px">The rules</p>
+    <p style="font-size:14px;color:var(--text-2);line-height:1.8;margin:0">Drop: articles, filler (just/really/basically), pleasantries, hedging.<br>Fragments OK. Short synonyms. Code unchanged.<br>Pattern: <code>[thing] [action] [reason]. [next step].</code><br>Auto-expand for: security warnings, irreversible actions, user confusion.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:1.5rem 0">
+    <div style="padding:16px 18px;border:1px solid var(--border-light);border-radius:6px">
+      <p style="font-size:11px;font-weight:600;color:var(--text-4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Before</p>
+      <p style="font-size:13.5px;color:var(--text-3);line-height:1.6;margin:0;font-style:italic">"Sure, I'd be happy to help! I've looked at the database connection pooling configuration and it appears that the issue is related to the maximum idle timeout setting being set too low for your workload. Let me walk you through the fix."</p>
+    </div>
+    <div style="padding:16px 18px;border:1px solid var(--accent);border-radius:6px;background:var(--accent-light)">
+      <p style="font-size:11px;font-weight:600;color:var(--accent-dark);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">After</p>
+      <p style="font-size:13.5px;color:var(--text);line-height:1.6;margin:0">"DB pool idle timeout too low for workload. Set <code>max_idle_ms: 30000</code> in config. Fix:"</p>
+    </div>
+  </div>
+
+  <p class="body-text">~65-75% output token reduction. Full technical accuracy. The agent says the same thing in fewer words. Your context window lasts longer from both sides.</p>
+</section>
+
+<hr class="sep">
+
 <!-- Ch 5 -->
 <section class="chapter rev">
   <p class="section-label">Continuity</p>
@@ -331,13 +362,13 @@ code{font-family:var(--mono);font-size:.88em;background:var(--bg-code);color:var
 <!-- Ch 6 -->
 <section class="chapter rev">
   <p class="section-label">Platforms</p>
-  <h2 class="section-title">12 platforms, one plugin</h2>
+  <h2 class="section-title">14 platforms, one plugin</h2>
   <div class="rule"></div>
 
   <p class="body-text">Works on Claude Code, Cursor, Copilot, Codex, Gemini CLI, and seven more. Platforms with hook support get automatic routing. The rest use instruction-based rules. Same plugin everywhere.</p>
 
   <div style="display:flex;flex-wrap:wrap;gap:6px;margin:1.2rem 0">
-    <span class="tag">Claude Code</span><span class="tag">Cursor</span><span class="tag">Codex CLI</span><span class="tag">VS Code Copilot</span><span class="tag">Gemini CLI</span><span class="tag">Kiro</span><span class="tag">OpenCode</span><span class="tag">KiloCode</span><span class="tag">Zed</span><span class="tag">OpenClaw</span><span class="tag">Pi</span><span class="tag">Antigravity</span>
+    <span class="tag">Claude Code</span><span class="tag">Cursor</span><span class="tag">Codex CLI</span><span class="tag">VS Code Copilot</span><span class="tag">JetBrains Copilot</span><span class="tag">Gemini CLI</span><span class="tag">Qwen Code</span><span class="tag">Kiro</span><span class="tag">OpenCode</span><span class="tag">KiloCode</span><span class="tag">Zed</span><span class="tag">OpenClaw</span><span class="tag">Pi</span><span class="tag">Antigravity</span>
   </div>
 </section>
 

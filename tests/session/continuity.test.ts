@@ -102,7 +102,7 @@ describe("SessionStart Hook", () => {
     const result = runHook({});
     const parsed = JSON.parse(result.stdout);
     const ctx = parsed.hookSpecificOutput.additionalContext;
-    assert.ok(ctx.includes("500 words"), "Expected 500-word limit");
+    assert.ok(ctx.includes("Respond concise"), "Expected communication style directive");
     assert.ok(
       ctx.includes("Write artifacts"),
       "Expected artifact policy",

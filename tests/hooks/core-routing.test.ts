@@ -437,22 +437,21 @@ describe("routePreToolUse", () => {
       expect(ROUTING_BLOCK).toContain("<file_writing_policy>");
       expect(ROUTING_BLOCK).toContain("NEVER use");
       expect(ROUTING_BLOCK).toContain("ctx_execute");
-      expect(ROUTING_BLOCK).toContain("native Write tool");
-      expect(ROUTING_BLOCK).toContain("Edit tool");
+      expect(ROUTING_BLOCK).toContain("native Write/Edit tools");
     });
 
     it("forbidden_actions blocks ctx_execute for file creation", () => {
       expect(ROUTING_BLOCK).toContain(
-        "DO NOT use",
+        "NO",
       );
       expect(ROUTING_BLOCK).toContain(
-        "to create, modify, or overwrite files",
+        "for file creation/modification",
       );
     });
 
     it("artifact_policy specifies native Write tool", () => {
       expect(ROUTING_BLOCK).toContain(
-        "Write artifacts (code, configs, PRDs) to FILES using the native Write tool",
+        "Write artifacts (code, configs, PRDs) to FILES. NEVER inline.",
       );
     });
   });
