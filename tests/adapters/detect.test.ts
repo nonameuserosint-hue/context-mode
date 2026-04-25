@@ -10,6 +10,7 @@ import { CursorAdapter } from "../../src/adapters/cursor/index.js";
 import { AntigravityAdapter } from "../../src/adapters/antigravity/index.js";
 import { KiroAdapter } from "../../src/adapters/kiro/index.js";
 import { QwenCodeAdapter } from "../../src/adapters/qwen-code/index.js";
+import { JetBrainsCopilotAdapter } from "../../src/adapters/jetbrains-copilot/index.js";
 
 // ─────────────────────────────────────────────────────────
 // detectPlatform — env var detection
@@ -39,6 +40,9 @@ describe("detectPlatform", () => {
     delete process.env.VSCODE_PID;
     delete process.env.VSCODE_CWD;
     delete process.env.QWEN_PROJECT_DIR;
+    delete process.env.IDEA_INITIAL_DIRECTORY;
+    delete process.env.IDEA_HOME;
+    delete process.env.JETBRAINS_CLIENT_ID;
     delete process.env.CONTEXT_MODE_PLATFORM;
     vi.restoreAllMocks();
   });
@@ -260,6 +264,29 @@ describe("detectPlatform", () => {
     expect(signal.platform).toBe("claude-code");
   });
 
+  // ── JetBrains Copilot ────────────────────────────────────
+
+  it("detects jetbrains-copilot via IDEA_INITIAL_DIRECTORY env var", () => {
+    process.env.IDEA_INITIAL_DIRECTORY = "/home/user/project";
+    const signal = detectPlatform();
+    expect(signal.platform).toBe("jetbrains-copilot");
+    expect(signal.confidence).toBe("high");
+  });
+
+  it("detects jetbrains-copilot via IDEA_HOME env var", () => {
+    process.env.IDEA_HOME = "/opt/idea";
+    const signal = detectPlatform();
+    expect(signal.platform).toBe("jetbrains-copilot");
+    expect(signal.confidence).toBe("high");
+  });
+
+  it("detects jetbrains-copilot via JETBRAINS_CLIENT_ID env var", () => {
+    process.env.JETBRAINS_CLIENT_ID = "idea-abc";
+    const signal = detectPlatform();
+    expect(signal.platform).toBe("jetbrains-copilot");
+    expect(signal.confidence).toBe("high");
+  });
+
   // ── Qwen Code ──────────────────────────────────────────
 
   it("detects qwen-code via QWEN_PROJECT_DIR env var", () => {
@@ -280,7 +307,7 @@ describe("detectPlatform", () => {
   it("returns a valid platform as default when no env vars are set", () => {
     // No env vars set — result depends on which config dirs exist on this machine.
     const signal = detectPlatform();
-    expect(["claude-code", "gemini-cli", "codex", "cursor", "opencode", "kilo", "openclaw", "vscode-copilot", "antigravity", "kiro", "pi", "zed", "qwen-code"]).toContain(signal.platform);
+    expect(["claude-code", "gemini-cli", "codex", "cursor", "opencode", "kilo", "openclaw", "vscode-copilot", "antigravity", "kiro", "pi", "zed", "qwen-code", "jetbrains-copilot"]).toContain(signal.platform);
   });
 });
 
@@ -343,6 +370,11 @@ describe("getAdapter", () => {
   it("returns QwenCodeAdapter for qwen-code", async () => {
     const adapter = await getAdapter("qwen-code");
     expect(adapter).toBeInstanceOf(QwenCodeAdapter);
+  });
+
+  it("returns JetBrainsCopilotAdapter for jetbrains-copilot", async () => {
+    const adapter = await getAdapter("jetbrains-copilot");
+    expect(adapter).toBeInstanceOf(JetBrainsCopilotAdapter);
   });
 
   it("returns ClaudeCodeAdapter for unknown platform", async () => {

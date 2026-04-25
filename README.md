@@ -220,6 +220,53 @@ Full hook config including PreCompact: [`configs/vscode-copilot/hooks.json`](con
 </details>
 
 <details>
+<summary><strong>JetBrains Copilot</strong> — hooks with SessionStart</summary>
+
+**Prerequisites:** Node.js 18+, JetBrains IDE with GitHub Copilot plugin v1.5.57+.
+
+**Install:**
+
+1. Install context-mode globally:
+
+   ```bash
+   npm install -g context-mode
+   ```
+
+2. Add MCP server via Settings UI: **Settings > Tools > AI Assistant > Model Context Protocol (MCP) > Add Server**:
+   - **Name:** `context-mode`
+   - **Command:** `context-mode`
+
+3. Create `.github/hooks/context-mode.json`:
+
+   ```json
+   {
+     "hooks": {
+       "PreToolUse": [
+         { "type": "command", "command": "context-mode hook jetbrains-copilot pretooluse" }
+       ],
+       "PostToolUse": [
+         { "type": "command", "command": "context-mode hook jetbrains-copilot posttooluse" }
+       ],
+       "SessionStart": [
+         { "type": "command", "command": "context-mode hook jetbrains-copilot sessionstart" }
+       ]
+     }
+   }
+   ```
+
+4. Restart the JetBrains IDE.
+
+**Verify:** Open Copilot Chat and type `ctx stats`. Context-mode tools should appear and respond.
+
+**Routing:** Automatic. The SessionStart hook injects routing instructions at runtime — no instruction file is written to your project.
+
+Full hook config including PreCompact: [`configs/jetbrains-copilot/hooks.json`](configs/jetbrains-copilot/hooks.json)
+
+Full setup guide: [`docs/jetbrains-copilot.md`](docs/jetbrains-copilot.md)
+
+</details>
+
+<details>
 <summary><strong>Cursor</strong> — hooks with stop support</summary>
 
 **Prerequisites:** Node.js 18+, Cursor with agent mode.
@@ -838,16 +885,16 @@ Context Mode captures every meaningful event during your session and persists th
 
 Session continuity requires 4 hooks working together:
 
-| Hook | Role | Claude Code | Gemini CLI | VS Code Copilot | Cursor | OpenCode | KiloCode | OpenClaw | Codex CLI | Antigravity | Kiro | Zed | Pi |
-|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **PreToolUse** | Enforces sandbox routing before tool execution | Yes | -- | -- | Yes | -- | -- | -- | Yes | -- | Yes | -- | ✓ (via tool_call event) |
-| **PostToolUse** | Captures events after each tool call | Yes | Yes | Yes | Yes | Plugin | Plugin | Plugin | Yes | -- | Yes | -- | ✓ (via tool_result event) |
-| **UserPromptSubmit** | Captures user decisions and corrections | Yes | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| **PreCompact** | Builds snapshot before compaction | Yes | Yes | Yes | -- | Plugin | Plugin | Plugin | -- | -- | -- | -- | ✓ (via session_before_compact) |
-| **SessionStart** | Restores state after compaction or resume | Yes | Yes | Yes | -- | -- | -- | Plugin | Yes | -- | -- | -- | ✓ (via session_start event) |
-| | **Session completeness** | **Full** | **High** | **High** | **Partial** | **High** | **High** | **High** | **Partial** | **--** | **Partial** | **--** | **High** |
+| Hook | Role | Claude Code | Gemini CLI | VS Code Copilot | JetBrains Copilot | Cursor | OpenCode | KiloCode | OpenClaw | Codex CLI | Antigravity | Kiro | Zed | Pi |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **PreToolUse** | Enforces sandbox routing before tool execution | Yes | -- | -- | -- | Yes | -- | -- | -- | Yes | -- | Yes | -- | ✓ (via tool_call event) |
+| **PostToolUse** | Captures events after each tool call | Yes | Yes | Yes | Yes | Yes | Plugin | Plugin | Plugin | Yes | -- | Yes | -- | ✓ (via tool_result event) |
+| **UserPromptSubmit** | Captures user decisions and corrections | Yes | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
+| **PreCompact** | Builds snapshot before compaction | Yes | Yes | Yes | Yes | -- | Plugin | Plugin | Plugin | -- | -- | -- | -- | ✓ (via session_before_compact) |
+| **SessionStart** | Restores state after compaction or resume | Yes | Yes | Yes | Yes | -- | -- | -- | Plugin | Yes | -- | -- | -- | ✓ (via session_start event) |
+| | **Session completeness** | **Full** | **High** | **High** | **High** | **Partial** | **High** | **High** | **High** | **Partial** | **--** | **Partial** | **--** | **High** |
 
-> **Note:** Full session continuity (capture + snapshot + restore) works on **Claude Code**, **Gemini CLI**, and **VS Code Copilot**. **OpenCode** provides **high** session continuity: it captures tool events and injects compaction snapshots via the plugin, but SessionStart is not yet available ([#14808](https://github.com/sst/opencode/issues/14808)), so startup/resume restore is not supported. **KiloCode** shares the same plugin architecture as OpenCode via the OpenCodeAdapter, so its continuity level depends on KiloCode's SessionStart support. **Cursor** captures tool events via `preToolUse`/`postToolUse`, but `sessionStart` is currently rejected by Cursor's validator ([forum report](https://forum.cursor.com/t/unknown-hook-type-sessionstart/149566)), so session restore after compaction is not available yet. **OpenClaw** uses native gateway plugin hooks (`api.on()`) for full session continuity. **Pi Coding Agent** provides high session continuity via extension hooks (`tool_call`, `tool_result`, `session_start`, `session_before_compact`). **Codex CLI** provides partial hook-based session tracking through PreToolUse, PostToolUse, and SessionStart; MCP tools work. **Antigravity**, **Kiro**, and **Zed** have no hook support in the current release, so session tracking is not available.
+> **Note:** Full session continuity (capture + snapshot + restore) works on **Claude Code**, **Gemini CLI**, **VS Code Copilot**, and **JetBrains Copilot**. **OpenCode** provides **high** session continuity: it captures tool events and injects compaction snapshots via the plugin, but SessionStart is not yet available ([#14808](https://github.com/sst/opencode/issues/14808)), so startup/resume restore is not supported. **KiloCode** shares the same plugin architecture as OpenCode via the OpenCodeAdapter, so its continuity level depends on KiloCode's SessionStart support. **Cursor** captures tool events via `preToolUse`/`postToolUse`, but `sessionStart` is currently rejected by Cursor's validator ([forum report](https://forum.cursor.com/t/unknown-hook-type-sessionstart/149566)), so session restore after compaction is not available yet. **OpenClaw** uses native gateway plugin hooks (`api.on()`) for full session continuity. **Pi Coding Agent** provides high session continuity via extension hooks (`tool_call`, `tool_result`, `session_start`, `session_before_compact`). **Codex CLI** provides partial hook-based session tracking through PreToolUse, PostToolUse, and SessionStart; MCP tools work. **Antigravity**, **Kiro**, and **Zed** have no hook support in the current release, so session tracking is not available.
 
 <details>
 <summary><strong>What gets captured</strong></summary>
@@ -922,6 +969,8 @@ Detailed event data is also indexed into FTS5 for on-demand retrieval via `searc
 
 **VS Code Copilot** — High coverage. Same as Gemini CLI — PostToolUse, PreCompact, and SessionStart all fire. User decisions aren't captured but all tool-level events are.
 
+**JetBrains Copilot** — High coverage. Same capabilities as VS Code Copilot — PostToolUse, PreCompact, and SessionStart all fire. Uses the same hook wire protocol and response format. User decisions aren't captured but all tool-level events are.
+
 **Cursor** — Partial coverage. Native `preToolUse` and `postToolUse` hooks capture tool events. `sessionStart` is documented by Cursor but currently rejected by their validator, so session restore is not available. Routing instructions are delivered via MCP server startup instead.
 
 **OpenCode** — Partial. The TypeScript plugin captures PostToolUse events via `tool.execute.after`, but SessionStart is not yet available ([#14808](https://github.com/sst/opencode/issues/14808)). Events are stored but not automatically restored after compaction.
@@ -944,18 +993,18 @@ Detailed event data is also indexed into FTS5 for on-demand retrieval via `searc
 
 ## Platform Compatibility
 
-| Feature | Claude Code | Qwen Code | Gemini CLI | VS Code Copilot | Cursor | OpenCode | KiloCode | OpenClaw | Codex CLI | Antigravity | Kiro | Zed | Pi |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| MCP Server | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
-| PreToolUse Hook | Yes | Yes | Yes | Yes | Yes | Plugin | Plugin | Plugin | Yes | -- | Yes | -- | Yes (extension) |
-| PostToolUse Hook | Yes | Yes | Yes | Yes | Yes | Plugin | Plugin | Plugin | Yes | -- | Yes | -- | Yes (extension) |
-| SessionStart Hook | Yes | Yes | Yes | Yes | -- | -- | -- | Plugin | Yes | -- | -- | -- | Yes (extension) |
-| PreCompact Hook | Yes | Yes | Yes | Yes | -- | Plugin | Plugin | Plugin | -- | -- | -- | -- | Yes (extension) |
-| Can Modify Args | Yes | Yes | Yes | Yes | Yes | Plugin | Plugin | Plugin | -- | -- | -- | -- | Yes (extension) |
-| Can Block Tools | Yes | Yes | Yes | Yes | Yes | Plugin | Plugin | Plugin | Yes | -- | Yes | -- | Yes (extension) |
-| Utility Commands (ctx) | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes (/ctx-stats, /ctx-doctor) |
-| Slash Commands | Yes | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| Plugin Marketplace | Yes | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
+| Feature | Claude Code | Qwen Code | Gemini CLI | VS Code Copilot | JetBrains Copilot | Cursor | OpenCode | KiloCode | OpenClaw | Codex CLI | Antigravity | Kiro | Zed | Pi |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| MCP Server | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| PreToolUse Hook | Yes | Yes | Yes | Yes | Yes | Yes | Plugin | Plugin | Plugin | Yes | -- | Yes | -- | Yes (extension) |
+| PostToolUse Hook | Yes | Yes | Yes | Yes | Yes | Yes | Plugin | Plugin | Plugin | Yes | -- | Yes | -- | Yes (extension) |
+| SessionStart Hook | Yes | Yes | Yes | Yes | Yes | -- | -- | -- | Plugin | Yes | -- | -- | -- | Yes (extension) |
+| PreCompact Hook | Yes | Yes | Yes | Yes | Yes | -- | Plugin | Plugin | Plugin | -- | -- | -- | -- | Yes (extension) |
+| Can Modify Args | Yes | Yes | Yes | Yes | Yes | Yes | Plugin | Plugin | Plugin | -- | -- | -- | -- | Yes (extension) |
+| Can Block Tools | Yes | Yes | Yes | Yes | Yes | Yes | Plugin | Plugin | Plugin | Yes | -- | Yes | -- | Yes (extension) |
+| Utility Commands (ctx) | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes (/ctx-stats, /ctx-doctor) |
+| Slash Commands | Yes | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
+| Plugin Marketplace | Yes | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
 
 > **OpenCode** uses a TypeScript plugin paradigm — hooks run as in-process functions via `tool.execute.before`, `tool.execute.after`, and `experimental.session.compacting`, providing the same routing enforcement and session continuity as shell-based hooks. SessionStart is not yet available ([#14808](https://github.com/sst/opencode/issues/14808)), but compaction recovery works via the plugin's compacting hook.
 >
@@ -973,13 +1022,14 @@ Detailed event data is also indexed into FTS5 for on-demand retrieval via `searc
 
 Hooks intercept tool calls programmatically — they can block dangerous commands and redirect them to the sandbox before execution. Instruction files guide the model via prompt instructions but cannot block anything. **Always enable hooks where supported.**
 
-> **Note:** Routing instruction files were previously auto-written to project directories on first session start. This was disabled to prevent git tree pollution ([#158](https://github.com/mksglu/context-mode/issues/158), [#164](https://github.com/mksglu/context-mode/issues/164)). Hook-capable platforms (Claude Code, Gemini CLI, VS Code Copilot, Cursor, OpenCode, OpenClaw, Codex CLI) inject routing via hooks and need no file. Non-hook platforms (Zed, Kiro, Antigravity) require a one-time manual copy — see each platform's install section.
+> **Note:** Routing instruction files were previously auto-written to project directories on first session start. This was disabled to prevent git tree pollution ([#158](https://github.com/mksglu/context-mode/issues/158), [#164](https://github.com/mksglu/context-mode/issues/164)). Hook-capable platforms (Claude Code, Gemini CLI, VS Code Copilot, JetBrains Copilot, Cursor, OpenCode, OpenClaw, Codex CLI) inject routing via hooks and need no file. Non-hook platforms (Zed, Kiro, Antigravity) require a one-time manual copy — see each platform's install section.
 
 | Platform | Hooks | Instruction File | With Hooks | Without Hooks |
 |---|:---:|---|:---:|:---:|
 | Claude Code | Yes (auto) | [`CLAUDE.md`](configs/claude-code/CLAUDE.md) | **~98% saved** | ~60% saved |
 | Gemini CLI | Yes | [`GEMINI.md`](configs/gemini-cli/GEMINI.md) | **~98% saved** | ~60% saved |
 | VS Code Copilot | Yes | [`copilot-instructions.md`](configs/vscode-copilot/copilot-instructions.md) | **~98% saved** | ~60% saved |
+| JetBrains Copilot | Yes | [`copilot-instructions.md`](configs/vscode-copilot/copilot-instructions.md) | **~98% saved** | ~60% saved |
 | Cursor | Yes | [`context-mode.mdc`](configs/cursor/context-mode.mdc) | **~98% saved** | ~60% saved |
 | OpenCode | Plugin | [`AGENTS.md`](configs/opencode/AGENTS.md) | **~98% saved** | ~60% saved |
 | OpenClaw | Plugin | [`AGENTS.md`](configs/openclaw/AGENTS.md) | **~98% saved** | ~60% saved |

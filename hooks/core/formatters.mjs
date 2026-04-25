@@ -69,6 +69,30 @@ export const formatters = {
     }),
   },
 
+  "jetbrains-copilot": {
+    deny: (reason) => ({
+      permissionDecision: "deny",
+      permissionDecisionReason: reason,
+    }),
+    ask: () => ({
+      permissionDecision: "ask",
+    }),
+    modify: (updatedInput) => ({
+      hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        permissionDecision: "allow",
+        permissionDecisionReason: "Routed to context-mode sandbox",
+        updatedInput,
+      },
+    }),
+    context: (additionalContext) => ({
+      hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        additionalContext,
+      },
+    }),
+  },
+
   "codex": {
     deny: (reason) => ({
       hookSpecificOutput: {

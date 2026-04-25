@@ -91,6 +91,14 @@ export const KIRO_OPTS = {
   sessionIdEnv: undefined,    // No session ID env var — uses ppid fallback
 };
 
+/** JetBrains Copilot platform options. */
+export const JETBRAINS_OPTS = {
+  configDir: ".config/JetBrains",
+  configDirEnv: undefined,
+  projectDirEnv: "IDEA_INITIAL_DIRECTORY",
+  sessionIdEnv: undefined,
+};
+
 /**
  * Resolve the platform config directory, respecting env var overrides.
  * Platforms like Claude Code (CLAUDE_CONFIG_DIR), Gemini CLI (GEMINI_CLI_HOME),

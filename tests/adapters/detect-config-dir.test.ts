@@ -69,6 +69,7 @@ describe("detectPlatform — config directory branches", () => {
     [[".config", "kilo"], "kilo"],
     [[".config", "opencode"], "opencode"],
     [[".config", "zed"], "zed"],
+    [[".config", "JetBrains"], "jetbrains-copilot"],
   ])("detects XDG ~/%s/%s → %s at medium confidence", (segs, expected) => {
     forceDir(resolve(home, ...segs));
     const signal = detectPlatform();

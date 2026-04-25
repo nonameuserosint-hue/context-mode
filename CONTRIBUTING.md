@@ -288,6 +288,7 @@ npx skills add mksglu/context-mode --skill context-mode-ops
 | Cursor hooks | `tests/hooks/cursor-hooks.test.ts` |
 | Gemini hooks | `tests/hooks/gemini-hooks.test.ts` |
 | VS Code hooks | `tests/hooks/vscode-hooks.test.ts` |
+| JetBrains hooks | `tests/hooks/jetbrains-hooks.test.ts` |
 | Kiro hooks | `tests/hooks/kiro-hooks.test.ts` |
 | Session DB | `tests/session/session-db.test.ts` |
 | Session extract | `tests/session/session-extract.test.ts` |

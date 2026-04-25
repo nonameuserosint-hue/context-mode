@@ -70,6 +70,12 @@ const HOOK_MAP: Record<string, Record<string, string>> = {
     pretooluse: "hooks/kiro/pretooluse.mjs",
     posttooluse: "hooks/kiro/posttooluse.mjs",
   },
+  "jetbrains-copilot": {
+    pretooluse: "hooks/jetbrains-copilot/pretooluse.mjs",
+    posttooluse: "hooks/jetbrains-copilot/posttooluse.mjs",
+    precompact: "hooks/jetbrains-copilot/precompact.mjs",
+    sessionstart: "hooks/jetbrains-copilot/sessionstart.mjs",
+  },
   "qwen-code": {
     pretooluse: "hooks/pretooluse.mjs",
     posttooluse: "hooks/posttooluse.mjs",
